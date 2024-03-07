@@ -24,13 +24,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<CompanyDbContext>();
-    dbContext.Database.EnsureCreated(); // Only in development, consider migrations in production
-}
-
-
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

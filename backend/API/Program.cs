@@ -1,9 +1,9 @@
 using DAL.Contexts;
+using DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
-var congiguration = builder.Configuration;
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -12,9 +12,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<CompanyDbContext>(
     options =>
     {
-        options.UseSqlServer(congiguration
+        options.UseSqlServer(builder.Configuration
             .GetConnectionString(nameof(CompanyDbContext)));
     });
+
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 
 var app = builder.Build();
 

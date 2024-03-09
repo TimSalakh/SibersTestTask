@@ -11,30 +11,6 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.HasKey(p => p.Id);
 
         builder
-            .Property(p => p.Name)
-            .IsRequired();
-
-        builder
-            .Property(p => p.Customer)
-            .IsRequired();
-
-        builder
-            .Property(p => p.Executor)
-            .IsRequired();
-
-        builder
-            .Property(p => p.StartDate)
-            .IsRequired();
-
-        builder
-            .Property(p => p.EndDate)
-            .IsRequired();
-
-        builder
-            .Property(p => p.Priority)
-            .IsRequired();
-
-        builder
             .HasMany(p => p.Employees)
             .WithMany(e => e.Projects);
 

@@ -11,18 +11,6 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         builder.HasKey(e => e.Id);
 
         builder
-            .Property(e => e.Name)
-            .IsRequired();
-
-        builder
-            .Property(e => e.Surname)
-            .IsRequired();
-
-        builder
-            .Property(e => e.Patronymic)
-            .IsRequired();
-
-        builder
             .HasMany(e => e.Projects)
             .WithMany(p => p.Employees);
     }

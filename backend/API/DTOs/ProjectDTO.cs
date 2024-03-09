@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DAL.Models;
+namespace API.VM;
 
-public class Project
+public class ProjectDTO
 {
-    public Guid Id { get; set; }
-
     [Required]
     public string Name { get; set; }
 
@@ -14,11 +12,9 @@ public class Project
 
     [Required]
     public string Executor { get; set; }
-    public List<Employee> Employees { get; set; } = [];
 
     [Required]
     public Guid LeaderId { get; set; }
-    public Employee Leader { get; set; }
 
     [Required]
     public DateOnly StartDate { get; set; }

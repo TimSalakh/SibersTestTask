@@ -1,11 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DAL.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace DAL.Models;
+namespace API.VM;
 
-public class Employee
+public class EmployeeDTO
 {
-    public Guid Id { get; set; }
-
     [Required]
     public string Name { get; set; }
 
@@ -17,6 +16,4 @@ public class Employee
 
     [Required]
     public string Email { get; set; }
-
-    public List<Project> Projects { get; set; } = [];
 }

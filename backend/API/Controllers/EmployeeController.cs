@@ -1,4 +1,5 @@
-﻿using DAL.Models;
+﻿using API.VM;
+using DAL.Models;
 using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,13 +17,14 @@ public class EmployeeController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Employee>>> GetAllAssync()
+    public async Task<ActionResult<List<Employee>>> GetAll()
     {
-        return await _employeeRepository.GetAllAsync();
+        var employees = await _employeeRepository.GetAllAsync();
+        return Ok(employees);
     }
 
-    [HttpGet("id")]
-    public async Task<ActionResult<Employee>> GetAsync(Guid id)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Employee>> Get(Guid id)
     {
         var targetEmployee = await _employeeRepository.GetByIdAsync(id);
 
@@ -32,30 +34,45 @@ public class EmployeeController : Controller
         return Ok(targetEmployee);
     }
 
-    //[HttpGet("id")]
-    //public async Task<ActionResult<List<Project>?>> GetProjectsAsync(Guid id)
-    //{
-    //    return await _employeeRepository.GetProjectsAsync(id);
-    //}
-
     [HttpPost]
-    public async Task<ActionResult> AddAsync([FromBody] string name, string surname, string patronymic)
+    public async Task<ActionResult> Add([FromBody] EmployeeDTO employeeDTO)
     {
-        await _employeeRepository.AddAsync(name, surname, patronymic);
+        var employee = new Employee
+        {
+            Id = new Guid(),
+            Name = employeeDTO.Name,
+            Surname = employeeDTO.Surname,
+            Patronymic = employeeDTO.Patronymic,
+            Email = employeeDTO.Email
+        };
+        await _employeeRepository.AddAsync(employee);
         return Ok();
     }
 
-    //[HttpPut]
-    //public async Task<ActionResult> UpdateAsync(Employee employee)
-    //{
-    //    await _employeeRepository.UpdateAsync(employee);
-    //    return NoContent();
-    //}
+    [HttpPut]
+    public async Task<ActionResult> Update(Guid id, [FromBody] EmployeeDTO employeeDTO)
+    {
+        var targetEmployee = await _employeeRepository.GetByIdAsync(id);
+        if (targetEmployee == null)
+            return NotFound();
 
-    //[HttpDelete]
-    //public async Task<ActionResult> DeleteAsync(Guid id)
-    //{
-    //    await _employeeRepository.DeleteAsync(id);
-    //    return NoContent();
-    //}
+        targetEmployee.Name = employeeDTO.Name;
+        targetEmployee.Surname = employeeDTO.Surname;
+        targetEmployee.Patronymic = employeeDTO.Patronymic;
+        targetEmployee.Email = employeeDTO.Email;
+
+        await _employeeRepository.UpdateAsync(targetEmployee);
+        return Ok();
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult> Delete(Guid id)
+    {
+        var targetEmployee = await _employeeRepository.GetByIdAsync(id);
+        if (targetEmployee == null)
+            return NotFound();
+
+        await _employeeRepository.DeleteAsync(id);
+        return Ok();
+    }
 }

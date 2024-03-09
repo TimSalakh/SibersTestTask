@@ -5,12 +5,11 @@ namespace DAL.Repositories.Interfaces;
 public interface IProjectRepository
 {
     Task AddAsync(Project project);
-    Task AddProjectAsync(Employee employee, Project project);
+    Task AddEmployee(Guid emploeeId, Guid projectId);
+    Task DeleteEmployee(Guid emploeeId, Guid projectId);
     Task DeleteAsync(Guid id);
-    Task DeleteAsync(Project project);
     Task<List<Project>> GetAllAsync();
     Task<Project?> GetByIdAsync(Guid id);
-    Task<List<Employee>?> GetEmployeesAsync(Project project);
+    Task<List<Employee>> GetEmployees(Guid projectId);
     Task UpdateAsync(Project project);
-    Task<Employee> GetLeaderAsync(Project project);
 }

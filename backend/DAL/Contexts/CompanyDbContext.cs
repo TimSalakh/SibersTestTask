@@ -13,9 +13,14 @@ public class CompanyDbContext : DbContext
     { }
 
     public CompanyDbContext(DbContextOptions<CompanyDbContext> options)
-        :base(options) 
-    { 
-        //Database.EnsureCreated();
+        : base(options) { }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer("Server=localhost;" +
+            "Database=Company;" +
+            "TrustServerCertificate=True;" +
+            "Trusted_Connection=True;");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,6 +1,5 @@
 ﻿using DAL.Contexts;
 using DAL.Models;
-using DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories.Interfaces;
@@ -16,6 +15,9 @@ public class ProjectRepository : IProjectRepository
 
     public async Task AddAsync(Project project)
     {
+        var leader = await _context.Employees
+            .FindAsync(project.LeaderId);
+        project.Leader = leader;
         await _context.Projects.AddAsync(project);
         await _context.SaveChangesAsync();
     }
@@ -24,6 +26,8 @@ public class ProjectRepository : IProjectRepository
     {
         return await _context.Projects
             .AsNoTracking()
+            .Include(p => p.Leader)
+            .Include(p => p.Employees)
             .ToListAsync();
     }
 
@@ -31,6 +35,8 @@ public class ProjectRepository : IProjectRepository
     {
         return await _context.Projects
             .AsNoTracking()
+            .Include(p => p.Leader)
+            .Include(p => p.Employees)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
@@ -42,46 +48,50 @@ public class ProjectRepository : IProjectRepository
 
     public async Task DeleteAsync(Guid id)
     {
-        var projectToDelete = await _context.Projects
-            .FindAsync(id);
+        var projectToDelete = await GetByIdAsync(id);
         if (projectToDelete == null)
             return;
         _context.Projects.Remove(projectToDelete);
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Project project)
-    {
-        _context.Projects.Remove(project);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task<List<Employee>?> GetEmployeesAsync(Project project)
-    {
-        var targetProject = await _context.Projects
-            .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Id == project.Id);
-
-        return targetProject.Employees;
-    }
-
-    public async Task AddProjectAsync(Employee employee, Project project)
+    public async Task AddEmployee(Guid projectId, Guid emploeeId)
     {
         var targetEmployee = await _context.Employees
             .AsNoTracking()
-            .FirstOrDefaultAsync(e => e.Id == employee.Id);
+            .FirstOrDefaultAsync(e => e.Id == emploeeId);
 
-        employee.Projects.Add(project);
-        _context.Employees.Update(employee);
-        await _context.SaveChangesAsync();
+        var targetProject = await GetByIdAsync(projectId);
+
+        if (targetEmployee == null || targetProject == null)
+            return;
+
+        targetProject.Employees.Add(targetEmployee);
+        await UpdateAsync(targetProject);
     }
 
-    public async Task<Employee> GetLeaderAsync(Project project)
+    public async Task DeleteEmployee(Guid projectId, Guid emploeeId)
     {
-        var targetProject = await _context.Projects
+        var targetEmployee = await _context.Employees
             .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Id == project.Id);
+            .FirstOrDefaultAsync(e => e.Id == emploeeId);
 
-        return targetProject.Leader;
+        var targetProject = await GetByIdAsync(projectId);
+
+        if (targetEmployee == null || targetProject == null)
+            return;
+
+        targetProject.Employees.Remove(targetEmployee);
+        await UpdateAsync(targetProject);
+    }
+
+    public async Task<List<Employee>> GetEmployees(Guid projectId)
+    {
+        var projectsWithEmployees = await _context.Projects
+            .AsNoTracking()
+            .Include(p => p.Employees)
+            .FirstOrDefaultAsync(p => p.Id == projectId);
+
+        return projectsWithEmployees!.Employees;
     }
 }

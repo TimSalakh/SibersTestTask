@@ -19,19 +19,24 @@ public class EmployeeRepository : IEmployeeRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<List<Employee>> GetAllAsync()
+    public async Task<IEnumerable<Employee>> GetAllAsync()
     {
-        return await _context.Employees
+        var employees = await Task.Run(() =>
+        {
+            return _context.Employees
             .AsNoTracking()
             .Include(e => e.Projects)
-            .ToListAsync();
+            .Include(e => e.Objectives);
+        });
+
+        return employees;
     }
 
     public async Task<Employee?> GetByIdAsync(Guid id)
     {
         return await _context.Employees
-            .AsNoTracking()
             .Include(e => e.Projects)
+            .Include(e => e.Objectives)
             .FirstOrDefaultAsync(e => e.Id == id);
     }
 
@@ -48,5 +53,15 @@ public class EmployeeRepository : IEmployeeRepository
             return;
         _context.Employees.Remove(employeeToDelete);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<Objective>> GetObjectives(Guid employeetId)
+    {
+        var employeeWithObjectives = await _context.Employees
+             .AsNoTracking()
+             .Include(p => p.Objectives)
+             .FirstOrDefaultAsync(e => e.Id == employeetId);
+
+        return employeeWithObjectives!.Objectives;
     }
 }

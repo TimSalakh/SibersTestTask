@@ -8,8 +8,9 @@ public interface IProjectRepository
     Task AddEmployee(Guid emploeeId, Guid projectId);
     Task DeleteEmployee(Guid emploeeId, Guid projectId);
     Task DeleteAsync(Guid id);
-    Task<List<Project>> GetAllAsync();
+    Task<IEnumerable<Project>> GetAllAsync();
     Task<Project?> GetByIdAsync(Guid id);
-    Task<List<Employee>> GetEmployees(Guid projectId);
+    Task<IEnumerable<Employee>> GetEmployees(Guid projectId);
+    Task<IEnumerable<Objective>> GetObjectives(Guid projectId);
     Task UpdateAsync(Project project);
 }

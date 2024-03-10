@@ -1,4 +1,5 @@
 using DAL.Contexts;
+using DAL.Repositories.Implementations;
 using DAL.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,12 +11,25 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<CompanyDbContext>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IObjectiveRepository, ObjectiveRepository>();
 
 builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options => 
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOriginPolicy",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
 var app = builder.Build();
+
+app.UseCors("AllowAnyOriginPolicy");
 
 app.UseHttpsRedirection();
 app.MapControllers();

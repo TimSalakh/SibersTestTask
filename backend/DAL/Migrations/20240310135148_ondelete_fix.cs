@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class ondelete_fix : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,7 +18,8 @@ namespace DAL.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Patronymic = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Patronymic = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,8 +33,8 @@ namespace DAL.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Customer = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Executor = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LeaderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Executor = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StartDate = table.Column<DateOnly>(type: "date", nullable: false),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: false),
                     Priority = table.Column<int>(type: "int", nullable: false)
@@ -46,7 +47,7 @@ namespace DAL.Migrations
                         column: x => x.LeaderId,
                         principalTable: "Employees",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -73,10 +74,61 @@ namespace DAL.Migrations
                         onDelete: ReferentialAction.NoAction);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Objective",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ExecutorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Priority = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Objective", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Objective_Employees_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Objective_Employees_ExecutorId",
+                        column: x => x.ExecutorId,
+                        principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Objective_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_EmployeeProject_ProjectsId",
                 table: "EmployeeProject",
                 column: "ProjectsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Objective_CreatorId",
+                table: "Objective",
+                column: "CreatorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Objective_ExecutorId",
+                table: "Objective",
+                column: "ExecutorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Objective_ProjectId",
+                table: "Objective",
+                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_LeaderId",
@@ -89,6 +141,9 @@ namespace DAL.Migrations
         {
             migrationBuilder.DropTable(
                 name: "EmployeeProject");
+
+            migrationBuilder.DropTable(
+                name: "Objective");
 
             migrationBuilder.DropTable(
                 name: "Projects");

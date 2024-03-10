@@ -17,13 +17,13 @@ public class EmployeeController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Employee>>> GetAll()
+    public async Task<ActionResult<IEnumerable<Employee>>> GetAll()
     {
-        var employees = await _employeeRepository.GetAllAsync();
+        var employees = await _employeeRepository.GetAllAsync();       
         return Ok(employees);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<ActionResult<Employee>> Get(Guid id)
     {
         var targetEmployee = await _employeeRepository.GetByIdAsync(id);
@@ -34,32 +34,39 @@ public class EmployeeController : Controller
         return Ok(targetEmployee);
     }
 
+    [HttpGet("Objectives/{id:guid}")]
+    public async Task<ActionResult<IEnumerable<Objective>>> GetObjectives(Guid id)
+    {
+        var objectives = await _employeeRepository.GetObjectives(id);
+        return Ok(objectives);
+    }
+
     [HttpPost]
-    public async Task<ActionResult> Add([FromBody] EmployeeDTO employeeDTO)
+    public async Task<ActionResult> Add([FromBody] EmployeeDto employeeDto)
     {
         var employee = new Employee
         {
-            Id = new Guid(),
-            Name = employeeDTO.Name,
-            Surname = employeeDTO.Surname,
-            Patronymic = employeeDTO.Patronymic,
-            Email = employeeDTO.Email
+            Id = Guid.NewGuid(),
+            Name = employeeDto.Name,
+            Surname = employeeDto.Surname,
+            Patronymic = employeeDto.Patronymic,
+            Email = employeeDto.Email
         };
         await _employeeRepository.AddAsync(employee);
         return Ok();
     }
 
     [HttpPut]
-    public async Task<ActionResult> Update(Guid id, [FromBody] EmployeeDTO employeeDTO)
+    public async Task<ActionResult> Update(Guid id, [FromBody] EmployeeDto employeeDto)
     {
         var targetEmployee = await _employeeRepository.GetByIdAsync(id);
         if (targetEmployee == null)
             return NotFound();
 
-        targetEmployee.Name = employeeDTO.Name;
-        targetEmployee.Surname = employeeDTO.Surname;
-        targetEmployee.Patronymic = employeeDTO.Patronymic;
-        targetEmployee.Email = employeeDTO.Email;
+        targetEmployee.Name = employeeDto.Name;
+        targetEmployee.Surname = employeeDto.Surname;
+        targetEmployee.Patronymic = employeeDto.Patronymic;
+        targetEmployee.Email = employeeDto.Email;
 
         await _employeeRepository.UpdateAsync(targetEmployee);
         return Ok();

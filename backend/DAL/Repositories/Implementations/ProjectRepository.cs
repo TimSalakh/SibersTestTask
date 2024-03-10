@@ -18,25 +18,31 @@ public class ProjectRepository : IProjectRepository
         var leader = await _context.Employees
             .FindAsync(project.LeaderId);
         project.Leader = leader;
+
         await _context.Projects.AddAsync(project);
         await _context.SaveChangesAsync();
     }
 
-    public async Task<List<Project>> GetAllAsync()
+    public async Task<IEnumerable<Project>> GetAllAsync()
     {
-        return await _context.Projects
+        var projects = await Task.Run(() =>
+        {
+            return _context.Projects
             .AsNoTracking()
             .Include(p => p.Leader)
             .Include(p => p.Employees)
-            .ToListAsync();
+            .Include(p => p.Objectives);
+        });
+
+        return projects;
     }
 
     public async Task<Project?> GetByIdAsync(Guid id)
     {
         return await _context.Projects
-            .AsNoTracking()
             .Include(p => p.Leader)
             .Include(p => p.Employees)
+            .Include(p => p.Objectives)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
@@ -58,7 +64,6 @@ public class ProjectRepository : IProjectRepository
     public async Task AddEmployee(Guid projectId, Guid emploeeId)
     {
         var targetEmployee = await _context.Employees
-            .AsNoTracking()
             .FirstOrDefaultAsync(e => e.Id == emploeeId);
 
         var targetProject = await GetByIdAsync(projectId);
@@ -73,7 +78,6 @@ public class ProjectRepository : IProjectRepository
     public async Task DeleteEmployee(Guid projectId, Guid emploeeId)
     {
         var targetEmployee = await _context.Employees
-            .AsNoTracking()
             .FirstOrDefaultAsync(e => e.Id == emploeeId);
 
         var targetProject = await GetByIdAsync(projectId);
@@ -85,7 +89,7 @@ public class ProjectRepository : IProjectRepository
         await UpdateAsync(targetProject);
     }
 
-    public async Task<List<Employee>> GetEmployees(Guid projectId)
+    public async Task<IEnumerable<Employee>> GetEmployees(Guid projectId)
     {
         var projectsWithEmployees = await _context.Projects
             .AsNoTracking()
@@ -93,5 +97,15 @@ public class ProjectRepository : IProjectRepository
             .FirstOrDefaultAsync(p => p.Id == projectId);
 
         return projectsWithEmployees!.Employees;
+    }
+
+    public async Task<IEnumerable<Objective>> GetObjectives(Guid projectId)
+    {
+        var projectsWithObjectives = await _context.Projects
+            .AsNoTracking()
+            .Include(p => p.Objectives)
+            .FirstOrDefaultAsync(p => p.Id == projectId);
+
+        return projectsWithObjectives!.Objectives;
     }
 }

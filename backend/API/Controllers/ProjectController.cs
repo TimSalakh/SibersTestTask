@@ -18,13 +18,13 @@ public class ProjectController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Project>>> GetAll()
+    public async Task<ActionResult<IEnumerable<Project>>> GetAll()
     {
         var projects = await _projectRepository.GetAllAsync();
         return Ok(projects);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<ActionResult<Project>> Get(Guid id)
     {
         var targetProject = await _projectRepository.GetByIdAsync(id);
@@ -35,33 +35,39 @@ public class ProjectController : Controller
         return Ok(targetProject);
     }
 
-    [HttpGet("Employees/{id}")]
-    public async Task<ActionResult<List<Employee>>> GetEmployees(Guid id)
+    [HttpGet("Employees/{id:guid}")]
+    public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees(Guid id)
     {
         var employees = await _projectRepository.GetEmployees(id);
-
         return Ok(employees);
     }
 
+    [HttpGet("Objectives/{id:guid}")]
+    public async Task<ActionResult<IEnumerable<Objective>>> GetObjectives(Guid id)
+    {
+        var objectives = await _projectRepository.GetObjectives(id);
+        return Ok(objectives);
+    }
 
     [HttpPost]
-    public async Task<ActionResult> Add([FromBody] ProjectDTO projectDTO)
+    public async Task<ActionResult> Add([FromBody] ProjectDTO projectDto)
     {
         var project = new Project
         { 
-            Name = projectDTO.Name,
-            Customer = projectDTO.Customer,
-            Executor = projectDTO.Executor,
-            LeaderId = projectDTO.LeaderId,
-            StartDate = projectDTO.StartDate,
-            EndDate = projectDTO.EndDate,
-            Priority = projectDTO.Priority
+            Id = Guid.NewGuid(),
+            Name = projectDto.Name,
+            Customer = projectDto.Customer,
+            Executor = projectDto.Executor,
+            LeaderId = projectDto.LeaderId,
+            StartDate = projectDto.StartDate,
+            EndDate = projectDto.EndDate,
+            Priority = projectDto.Priority
         };
         await _projectRepository.AddAsync(project);
         return Ok();
     }
 
-    [HttpPost("{projectId}/{employeeId}")]
+    [HttpPost("{projectId:guid}/{employeeId:guid}")]
     public async Task<ActionResult> AddEmployee(Guid projectId, Guid employeeId)
     {
         await _projectRepository.AddEmployee(projectId, employeeId);
@@ -69,19 +75,19 @@ public class ProjectController : Controller
     }
 
     [HttpPut]
-    public async Task<ActionResult> Update(Guid id, [FromBody] ProjectDTO projectDTO)
+    public async Task<ActionResult> Update(Guid id, [FromBody] ProjectDTO projectDto)
     {
         var targetProject = await _projectRepository.GetByIdAsync(id);
         if (targetProject == null)
             return NotFound();
 
-        targetProject.Name = projectDTO.Name;
-        targetProject.Customer = projectDTO.Customer;
-        targetProject.Executor = projectDTO.Executor;
-        targetProject.LeaderId = projectDTO.LeaderId;
-        targetProject.StartDate = projectDTO.StartDate;
-        targetProject.EndDate = projectDTO.EndDate;
-        targetProject.Priority = projectDTO.Priority;
+        targetProject.Name = projectDto.Name;
+        targetProject.Customer = projectDto.Customer;
+        targetProject.Executor = projectDto.Executor;
+        targetProject.LeaderId = projectDto.LeaderId;
+        targetProject.StartDate = projectDto.StartDate;
+        targetProject.EndDate = projectDto.EndDate;
+        targetProject.Priority = projectDto.Priority;
 
         await _projectRepository.UpdateAsync(targetProject);
         return Ok();
@@ -98,7 +104,7 @@ public class ProjectController : Controller
         return Ok();
     }
 
-    [HttpDelete("{projectId}/{employeeId}")]
+    [HttpDelete("{projectId:guid}/{employeeId:guid}")]
     public async Task<ActionResult> DeleteEmployee(Guid projectId, Guid employeeId)
     {
         await _projectRepository.DeleteEmployee(projectId, employeeId);

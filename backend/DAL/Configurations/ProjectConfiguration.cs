@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DAL.Configurations;
 
-public class ProjectConfiguration : IEntityTypeConfiguration<Project>
+internal class ProjectConfiguration : IEntityTypeConfiguration<Project>
 {
     public void Configure(EntityTypeBuilder<Project> builder)
     {
@@ -19,5 +19,9 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .WithMany()
             .HasForeignKey(p => p.LeaderId)
             .IsRequired();
+
+        builder
+            .HasMany(p => p.Objectives)
+            .WithOne(o => o.Project);
     }
 }

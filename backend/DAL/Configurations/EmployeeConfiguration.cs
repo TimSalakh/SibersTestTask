@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DAL.Configurations;
 
-public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
+internal class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
 {
     public void Configure(EntityTypeBuilder<Employee> builder)
     {
@@ -13,6 +13,10 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         builder
             .HasMany(e => e.Projects)
             .WithMany(p => p.Employees);
+
+        builder
+            .HasMany(e => e.Objectives)
+            .WithOne(o => o.Executor);
     }
 }
     

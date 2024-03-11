@@ -1,8 +1,8 @@
 ﻿using API.DTOs;
-using API.VM;
 using DAL.Models;
 using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace API.Controllers;
 
@@ -60,15 +60,15 @@ public class ObjectiveController : Controller
             return NotFound();
 
         targetObjective.Name = objectiveDto.name;
-        try
-        {
-            targetObjective.Status = (ObjectiveStatus)objectiveDto.status;
-        }
-        catch (Exception)
-        {
-            targetObjective.Status = ObjectiveStatus.InProgress;
-            return BadRequest();
-        }
+        //if (Enum.IsDefined(typeof(ObjectiveStatus), objectiveDto.status))
+        //{
+        //    targetObjective.Status = (ObjectiveStatus)objectiveDto.status;
+        //}
+        //else
+        //{
+        //    targetObjective.Status = ObjectiveStatus.InProgress;
+        //}
+        targetObjective.Status = (ObjectiveStatus)objectiveDto.status;
         targetObjective.Description = objectiveDto.description;
         targetObjective.Priority = objectiveDto.priority;
 

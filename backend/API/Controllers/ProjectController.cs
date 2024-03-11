@@ -1,4 +1,4 @@
-﻿using API.VM;
+﻿using API.DTOs;
 using DAL.Models;
 using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;

@@ -1,12 +1,14 @@
-﻿using API.VM;
+﻿using API.DTOs;
 using DAL.Models;
 using DAL.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+//[Authorize(Roles = "Employee")]
 public class EmployeeController : Controller
 {
     private readonly IEmployeeRepository _employeeRepository;
@@ -17,6 +19,7 @@ public class EmployeeController : Controller
     }
 
     [HttpGet]
+    //[Authorize(Roles = "Employee")]
     public async Task<ActionResult<IEnumerable<Employee>>> GetAll()
     {
         var employees = await _employeeRepository.GetAllAsync();       

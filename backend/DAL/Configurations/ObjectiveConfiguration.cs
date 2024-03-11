@@ -11,21 +11,15 @@ internal class ObjectiveConfiguration : IEntityTypeConfiguration<Objective>
         builder.HasKey(o => o.Id);
 
         builder
-            .HasOne(o => o.Creator)
-            .WithMany()
-            .HasForeignKey(o => o.CreatorId)
-            .IsRequired();
-
-        builder
             .HasOne(o => o.Executor)
             .WithMany(e => e.Objectives)
             .HasForeignKey(o => o.ExecutorId)
-            .IsRequired();
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder
             .HasOne(o => o.Project)
             .WithMany(p => p.Objectives)
             .HasForeignKey(o => o.ProjectId)
-            .IsRequired();
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

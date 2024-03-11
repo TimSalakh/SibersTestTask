@@ -16,10 +16,6 @@ public class ObjectiveRepository : IObjectiveRepository
 
     public async Task AddAsync(Objective objective)
     {
-        var creator = await _context.Employees
-            .FindAsync(objective.CreatorId);
-        objective.Creator = creator!;
-
         var executor = await _context.Employees
             .FindAsync(objective.ExecutorId);
         objective.Executor = executor!;
@@ -47,7 +43,6 @@ public class ObjectiveRepository : IObjectiveRepository
         {
             return _context.Objectives
             .AsNoTracking()
-            .Include(o => o.Creator)
             .Include(o => o.Executor)
             .Include(o => o.Project);
         });
@@ -58,7 +53,6 @@ public class ObjectiveRepository : IObjectiveRepository
     public async Task<Objective?> GetByIdAsync(Guid id)
     {
         return await _context.Objectives
-            .Include(o => o.Creator)
             .Include(o => o.Executor)
             .Include(o => o.Project)
             .FirstOrDefaultAsync(o => o.Id == id);

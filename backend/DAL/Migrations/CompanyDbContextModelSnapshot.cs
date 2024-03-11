@@ -55,14 +55,11 @@ namespace DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ExecutorId")
+                    b.Property<Guid?>("ExecutorId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
@@ -72,7 +69,7 @@ namespace DAL.Migrations
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("ProjectId")
+                    b.Property<Guid?>("ProjectId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Status")
@@ -80,13 +77,11 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatorId");
-
                     b.HasIndex("ExecutorId");
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Objective");
+                    b.ToTable("Objectives");
                 });
 
             modelBuilder.Entity("DAL.Models.Project", b =>
@@ -106,7 +101,7 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("LeaderId")
+                    b.Property<Guid?>("LeaderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
@@ -143,25 +138,15 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Models.Objective", b =>
                 {
-                    b.HasOne("DAL.Models.Employee", "Creator")
-                        .WithMany()
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DAL.Models.Employee", "Executor")
                         .WithMany("Objectives")
                         .HasForeignKey("ExecutorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("DAL.Models.Project", "Project")
                         .WithMany("Objectives")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Creator");
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Executor");
 
@@ -173,8 +158,7 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Models.Employee", "Leader")
                         .WithMany()
                         .HasForeignKey("LeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Leader");
                 });

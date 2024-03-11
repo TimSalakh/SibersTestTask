@@ -16,7 +16,8 @@ internal class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
 
         builder
             .HasMany(e => e.Objectives)
-            .WithOne(o => o.Executor);
+            .WithOne(o => o.Executor)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
     

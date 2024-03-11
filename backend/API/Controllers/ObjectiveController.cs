@@ -42,7 +42,6 @@ public class ObjectiveController : Controller
         {
             Id = Guid.NewGuid(),
             Name = objectiveDto.name,
-            CreatorId = objectiveDto.creatorId,
             ExecutorId = objectiveDto.executorId,
             ProjectId = objectiveDto.projectId,
             Status = ObjectiveStatus.ToDo,

@@ -18,10 +18,11 @@ internal class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .HasOne(p => p.Leader)
             .WithMany()
             .HasForeignKey(p => p.LeaderId)
-            .IsRequired();
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder
             .HasMany(p => p.Objectives)
-            .WithOne(o => o.Project);
+            .WithOne(o => o.Project)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

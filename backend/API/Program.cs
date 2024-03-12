@@ -1,7 +1,6 @@
 using DAL.Contexts;
 using DAL.Repositories.Implementations;
 using DAL.Repositories.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,15 +28,11 @@ builder.Services.AddCors(options =>
         });
 });
 
-//builder.Services.AddAuthorization();
-
-
 var app = builder.Build();
 
 app.UseCors("AllowAnyOriginPolicy");
 
 app.UseHttpsRedirection();
-//app.UseAuthorization();
 
 app.UseSwagger();
 app.UseSwaggerUI();

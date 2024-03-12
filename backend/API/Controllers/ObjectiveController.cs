@@ -60,14 +60,6 @@ public class ObjectiveController : Controller
             return NotFound();
 
         targetObjective.Name = objectiveDto.name;
-        //if (Enum.IsDefined(typeof(ObjectiveStatus), objectiveDto.status))
-        //{
-        //    targetObjective.Status = (ObjectiveStatus)objectiveDto.status;
-        //}
-        //else
-        //{
-        //    targetObjective.Status = ObjectiveStatus.InProgress;
-        //}
         targetObjective.Status = (ObjectiveStatus)objectiveDto.status;
         targetObjective.Description = objectiveDto.description;
         targetObjective.Priority = objectiveDto.priority;

@@ -5,8 +5,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories.Implementations;
 
+/// <summary>
+/// Repository that implements objective CRUD-interface
+/// </summary>
 public class ObjectiveRepository : IObjectiveRepository
 {
+    /// <summary>
+    /// Context of database to interact with 
+    /// </summary>
     private readonly CompanyDbContext _context;
 
     public ObjectiveRepository(CompanyDbContext context)
@@ -14,6 +20,11 @@ public class ObjectiveRepository : IObjectiveRepository
         _context = context;
     }
 
+    /// <summary>
+    /// Async objective addition method.
+    /// Setting executor and project from DTO before addition.
+    /// </summary>
+    /// <param name="objective">Objective to add</param>
     public async Task AddAsync(Objective objective)
     {
         var executor = await _context.Employees
@@ -28,15 +39,21 @@ public class ObjectiveRepository : IObjectiveRepository
         await _context.SaveChangesAsync();  
     }
 
+    /// <summary>
+    /// Async deleting by id.
+    /// </summary>
+    /// <param name="id">Target objective's id</param>
     public async Task DeleteAsync(Guid id)
     {
         var objectiveToDelete = await GetByIdAsync(id);
-        if (objectiveToDelete == null) 
-            return;
         _context.Objectives.Remove(objectiveToDelete);
         await _context.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Async method that gets all objectives including their 
+    /// executor and projects.
+    /// </summary>
     public async Task<IEnumerable<Objective>> GetAllAsync()
     {
         var objectives = await Task.Run(() =>
@@ -50,6 +67,9 @@ public class ObjectiveRepository : IObjectiveRepository
         return objectives;
     }
 
+    /// <summary>
+    /// Async get by id including objective's executor and project.
+    /// </summary>
     public async Task<Objective?> GetByIdAsync(Guid id)
     {
         return await _context.Objectives
@@ -58,6 +78,10 @@ public class ObjectiveRepository : IObjectiveRepository
             .FirstOrDefaultAsync(o => o.Id == id);
     }
 
+    /// <summary>
+    /// Async updating.
+    /// </summary>
+    /// <param name="project">Objective to update</param>
     public async Task UpdateAsync(Objective objective)
     {
         _context.Objectives.Update(objective);

@@ -2,6 +2,11 @@
 
 namespace DAL.Repositories.Interfaces;
 
+/// <summary>
+/// This is an interface which contains standart set
+/// of async CRUD operations for objective entity.
+/// Nothing special.
+/// </summary>
 public interface IObjectiveRepository
 {
     public Task AddAsync(Objective objective);

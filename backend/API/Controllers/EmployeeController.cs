@@ -1,11 +1,15 @@
 ﻿using API.DTOs;
 using DAL.Models;
 using DAL.Repositories.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
+/// <summary>
+/// REST API projects's class which contains GET, POST, PUT and DELETE
+/// methods to provide interaction frontend with backed part 
+/// of the application. Only necessary methods, nothing special.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class EmployeeController : Controller
@@ -28,18 +32,7 @@ public class EmployeeController : Controller
     public async Task<ActionResult<Employee>> Get(Guid id)
     {
         var targetEmployee = await _employeeRepository.GetByIdAsync(id);
-
-        if (targetEmployee == null)
-            return NotFound();
-
         return Ok(targetEmployee);
-    }
-
-    [HttpGet("Objectives/{id:guid}")]
-    public async Task<ActionResult<IEnumerable<Objective>>> GetObjectives(Guid id)
-    {
-        var objectives = await _employeeRepository.GetObjectives(id);
-        return Ok(objectives);
     }
 
     [HttpPost]
@@ -61,14 +54,10 @@ public class EmployeeController : Controller
     public async Task<ActionResult> Update(Guid id, [FromBody] EmployeeDto employeeDto)
     {
         var targetEmployee = await _employeeRepository.GetByIdAsync(id);
-        if (targetEmployee == null)
-            return NotFound();
-
-        targetEmployee.Name = employeeDto.Name;
+        targetEmployee!.Name = employeeDto.Name;
         targetEmployee.Surname = employeeDto.Surname;
         targetEmployee.Patronymic = employeeDto.Patronymic;
         targetEmployee.Email = employeeDto.Email;
-
         await _employeeRepository.UpdateAsync(targetEmployee);
         return Ok();
     }
@@ -77,9 +66,6 @@ public class EmployeeController : Controller
     public async Task<ActionResult> Delete(Guid id)
     {
         var targetEmployee = await _employeeRepository.GetByIdAsync(id);
-        if (targetEmployee == null)
-            return NotFound();
-
         await _employeeRepository.DeleteAsync(id);
         return Ok();
     }

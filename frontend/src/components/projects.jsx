@@ -5,7 +5,7 @@ export function Projects() {
   const [content, setContent] = useState(<ProjectsList showForm={showForm}/>)
 
   function showList() {
-    setContent(<ProjectsList showForm={showForm}/>)
+    setContent(<ProjectsList showForm={showForm} showModal={setContent}/>)
   }
 
   function showForm(project) {
@@ -122,7 +122,7 @@ function ProjectsForm(props) {
           Some data missing for project creation
         </div>
       )
-      return
+      return;
     }
 
     if (props.project.id) {
@@ -132,7 +132,7 @@ function ProjectsForm(props) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(project)
-    })
+      })
       .then(response => {
         if (!response.ok) {
           throw new Error("Server response error...")

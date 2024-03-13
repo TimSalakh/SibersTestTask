@@ -4,8 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories.Interfaces;
 
+/// <summary>
+/// Repository that implements projects CRUD-interface.
+/// </summary>
 public class ProjectRepository : IProjectRepository
 {
+    /// <summary>
+    /// Context of database to interact with.
+    /// </summary>
     private readonly CompanyDbContext _context;
 
     public ProjectRepository(CompanyDbContext context)
@@ -13,6 +19,11 @@ public class ProjectRepository : IProjectRepository
         _context = context;
     }
 
+    /// <summary>
+    /// Async addition.
+    /// Setting leader from DTO before addition.
+    /// </summary>
+    /// <param name="project">Project to add</param>
     public async Task AddAsync(Project project)
     {
         var leader = await _context.Employees
@@ -23,6 +34,11 @@ public class ProjectRepository : IProjectRepository
         await _context.SaveChangesAsync();
     }
 
+
+    /// <summary>
+    /// Async gets all method including project's leader, employees
+    /// and objectives.
+    /// </summary>
     public async Task<IEnumerable<Project>> GetAllAsync()
     {
         var projects = await Task.Run(() =>
@@ -37,6 +53,10 @@ public class ProjectRepository : IProjectRepository
         return projects;
     }
 
+    /// <summary>
+    /// Async get method by id including project's leader, employees
+    /// and objectives.
+    /// </summary>
     public async Task<Project?> GetByIdAsync(Guid id)
     {
         return await _context.Projects
@@ -46,21 +66,36 @@ public class ProjectRepository : IProjectRepository
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
+
+    /// <summary>
+    /// Async project updating method.
+    /// </summary>
+    /// <param name="project">Project to update</param>
     public async Task UpdateAsync(Project project)
     {
         _context.Projects.Update(project);
         await _context.SaveChangesAsync();
     }
 
+
+    /// <summary>
+    /// Async deleting project method.
+    /// </summary>
+    /// <param name="id">Target project's id</param>
     public async Task DeleteAsync(Guid id)
     {
         var projectToDelete = await GetByIdAsync(id);
-        if (projectToDelete == null)
-            return;
         _context.Projects.Remove(projectToDelete);
         await _context.SaveChangesAsync();
     }
 
+
+    /// <summary>
+    /// Async mtthod to addition employee to the project.
+    /// </summary>
+    /// <param name="projectId">Target employee's id</param>
+    /// <param name="emploeeId">Target project's id</param>
+    /// <returns></returns>
     public async Task AddEmployee(Guid projectId, Guid emploeeId)
     {
         var targetEmployee = await _context.Employees
@@ -75,6 +110,12 @@ public class ProjectRepository : IProjectRepository
         await UpdateAsync(targetProject);
     }
 
+    /// <summary>
+    /// Async method to deleting employee from the project.
+    /// </summary>
+    /// <param name="projectId">Target employee's id</param>
+    /// <param name="emploeeId">Target project's id</param>
+    /// <returns></returns>
     public async Task DeleteEmployee(Guid projectId, Guid emploeeId)
     {
         var targetEmployee = await _context.Employees
@@ -87,25 +128,5 @@ public class ProjectRepository : IProjectRepository
 
         targetProject.Employees.Remove(targetEmployee);
         await UpdateAsync(targetProject);
-    }
-
-    public async Task<IEnumerable<Employee>> GetEmployees(Guid projectId)
-    {
-        var projectsWithEmployees = await _context.Projects
-            .AsNoTracking()
-            .Include(p => p.Employees)
-            .FirstOrDefaultAsync(p => p.Id == projectId);
-
-        return projectsWithEmployees!.Employees;
-    }
-
-    public async Task<IEnumerable<Objective>> GetObjectives(Guid projectId)
-    {
-        var projectsWithObjectives = await _context.Projects
-            .AsNoTracking()
-            .Include(p => p.Objectives)
-            .FirstOrDefaultAsync(p => p.Id == projectId);
-
-        return projectsWithObjectives!.Objectives;
     }
 }

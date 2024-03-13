@@ -1,5 +1,9 @@
 ﻿namespace DAL.Models;
 
+/// <summary>
+/// Objective class which contains all properties 
+/// to interact with.
+/// </summary>
 public class Objective
 {
     public Guid Id { get; set; }

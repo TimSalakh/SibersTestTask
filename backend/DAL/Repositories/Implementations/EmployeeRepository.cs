@@ -4,8 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories.Interfaces;
 
+/// <summary>
+/// Repository that implements employee CRUD-interface.
+/// </summary>
 public class EmployeeRepository : IEmployeeRepository
 {
+    /// <summary>
+    /// Context of database to interact with.
+    /// </summary>
     private readonly CompanyDbContext _context;
 
     public EmployeeRepository(CompanyDbContext context)
@@ -13,12 +19,19 @@ public class EmployeeRepository : IEmployeeRepository
         _context = context;
     }
 
+    /// <summary>
+    /// Async addition method.
+    /// </summary>
+    /// <param name="employee">Employee to add</param>
     public async Task AddAsync(Employee employee)
     {
         await _context.Employees.AddAsync(employee);
         await _context.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Async get all method employees including employee's projects and objectives.
+    /// </summary>
     public async Task<IEnumerable<Employee>> GetAllAsync()
     {
         var employees = await Task.Run(() =>
@@ -32,6 +45,10 @@ public class EmployeeRepository : IEmployeeRepository
         return employees;
     }
 
+    /// <summary>
+    /// Async get by id method including employee's projects and objectives.
+    /// </summary>
+    /// <param name="id">Id of target employee</param>
     public async Task<Employee?> GetByIdAsync(Guid id)
     {
         return await _context.Employees
@@ -40,28 +57,25 @@ public class EmployeeRepository : IEmployeeRepository
             .FirstOrDefaultAsync(e => e.Id == id);
     }
 
+    /// <summary>
+    /// Async update of employee's entity method.
+    /// </summary>
+    /// <param name="employee">Target employee to update</param>
     public async Task UpdateAsync(Employee employee)
     {
         _context.Employees.Update(employee);
         await _context.SaveChangesAsync();
     }
 
+
+    /// <summary>
+    /// Async delete by id method.
+    /// </summary>
+    /// <param name="id">Target employee's id</param>
     public async Task DeleteAsync(Guid id)
     {
         var employeeToDelete = await GetByIdAsync(id);
-        if (employeeToDelete == null)
-            return;
         _context.Employees.Remove(employeeToDelete);
         await _context.SaveChangesAsync();
-    }
-
-    public async Task<IEnumerable<Objective>> GetObjectives(Guid employeetId)
-    {
-        var employeeWithObjectives = await _context.Employees
-             .AsNoTracking()
-             .Include(p => p.Objectives)
-             .FirstOrDefaultAsync(e => e.Id == employeetId);
-
-        return employeeWithObjectives!.Objectives;
     }
 }

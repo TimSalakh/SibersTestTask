@@ -5,7 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-
+/// <summary>
+/// REST API employee's class which contains GET, POST, PUT and DELETE
+/// methods to provide interaction frontend with backed part 
+/// of the application. Only necessary methods, nothing special.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class ProjectController : Controller
@@ -33,20 +37,6 @@ public class ProjectController : Controller
             return NotFound();
 
         return Ok(targetProject);
-    }
-
-    [HttpGet("Employees/{id:guid}")]
-    public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees(Guid id)
-    {
-        var employees = await _projectRepository.GetEmployees(id);
-        return Ok(employees);
-    }
-
-    [HttpGet("Objectives/{id:guid}")]
-    public async Task<ActionResult<IEnumerable<Objective>>> GetObjectives(Guid id)
-    {
-        var objectives = await _projectRepository.GetObjectives(id);
-        return Ok(objectives);
     }
 
     [HttpPost]
@@ -78,9 +68,6 @@ public class ProjectController : Controller
     public async Task<ActionResult> Update(Guid id, [FromBody] ProjectDTO projectDto)
     {
         var targetProject = await _projectRepository.GetByIdAsync(id);
-        if (targetProject == null)
-            return NotFound();
-
         targetProject.Name = projectDto.Name;
         targetProject.Customer = projectDto.Customer;
         targetProject.Executor = projectDto.Executor;
@@ -97,9 +84,6 @@ public class ProjectController : Controller
     public async Task<ActionResult> Delete(Guid id)
     {
         var targetProject = await _projectRepository.GetByIdAsync(id);
-        if (targetProject == null)
-            return NotFound();
-
         await _projectRepository.DeleteAsync(id);
         return Ok();
     }

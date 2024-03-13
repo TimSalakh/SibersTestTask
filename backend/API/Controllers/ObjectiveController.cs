@@ -2,10 +2,14 @@
 using DAL.Models;
 using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace API.Controllers;
 
+/// <summary>
+/// REST API objective's class which contains GET, POST, PUT and DELETE
+/// methods to provide interaction frontend with backed parts 
+/// of the application. Only necessary methods, nothing special.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class ObjectiveController : Controller
@@ -28,10 +32,6 @@ public class ObjectiveController : Controller
     public async Task<ActionResult<Objective>> Get(Guid id)
     {
         var targetObjective = await _objectiveRepository.GetByIdAsync(id);
-
-        if (targetObjective == null)
-            return NotFound();
-
         return Ok(targetObjective);
     }
 
@@ -56,14 +56,10 @@ public class ObjectiveController : Controller
     public async Task<ActionResult> Update(Guid id, [FromBody] ObjectiveDto objectiveDto)
     {
         var targetObjective = await _objectiveRepository.GetByIdAsync(id);
-        if (targetObjective == null)
-            return NotFound();
-
         targetObjective.Name = objectiveDto.name;
         targetObjective.Status = (ObjectiveStatus)objectiveDto.status;
         targetObjective.Description = objectiveDto.description;
         targetObjective.Priority = objectiveDto.priority;
-
         await _objectiveRepository.UpdateAsync(targetObjective);
         return Ok();
     }
@@ -72,9 +68,6 @@ public class ObjectiveController : Controller
     public async Task<ActionResult> Delete(Guid id)
     {
         var targetObjective = await _objectiveRepository.GetByIdAsync(id);
-        if (targetObjective == null)
-            return NotFound();
-
         await _objectiveRepository.DeleteAsync(id);
         return Ok();
     }

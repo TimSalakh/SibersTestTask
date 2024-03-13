@@ -4,6 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DAL.Configurations;
 
+/// <summary>
+/// Class of objective configurations. 
+/// Setting relation with employees and projects.
+/// </summary>
 internal class ObjectiveConfiguration : IEntityTypeConfiguration<Objective>
 {
     public void Configure(EntityTypeBuilder<Objective> builder)

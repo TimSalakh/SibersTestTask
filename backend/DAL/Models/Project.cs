@@ -1,5 +1,9 @@
 ﻿namespace DAL.Models;
 
+/// <summary>
+/// Project class which contains all properties 
+/// to interact with.
+/// </summary>
 public class Project
 {
     public Guid Id { get; set; }

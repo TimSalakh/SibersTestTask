@@ -8,6 +8,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Context and repositories registration.
 builder.Services.AddDbContext<CompanyDbContext>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
@@ -17,6 +18,7 @@ builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options => 
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
+//Allow requests to API from everyone.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAnyOriginPolicy",

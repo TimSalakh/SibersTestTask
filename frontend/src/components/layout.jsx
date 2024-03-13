@@ -21,6 +21,16 @@ export function Navbar() {
                 Employees
               </Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link text-dark" to="/projects">
+                Projects
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link text-dark" to="/objectives">
+                Objectives
+              </Link>
+            </li>
           </ul>
         </div>
     </nav>
@@ -32,7 +42,9 @@ export function Footer() {
   return (
     <footer>
       <div className="container p-3 mt-5 border-top">
-        <small className="d-block text-muted text-center">Made by Salakhutdinov Timur</small>
+        <small className="d-block text-muted text-center">
+          Made by Salakhutdinov Timur
+        </small>
       </div>
     </footer>
   )

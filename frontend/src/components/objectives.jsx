@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 
 
-export function Employees() {
-  const [content, setContent] = useState(<EmployeesList showForm={showForm}/>)
+export function Objectives() {
+  const [content, setContent] = useState(<ObjectivesList showForm={showForm}/>)
 
   function showList() {
-    setContent(<EmployeesList showForm={showForm}/>)
+    setContent(<ObjectivesList showForm={showForm}/>)
   }
 
-  function showForm(employee) {
-    setContent(<EmployeesForm employee={employee} showList={showList}/>)
+  function showForm(objective) {
+    setContent(<ObjectivesForm objective={objective} showList={showList}/>)
   }
 
   return (
@@ -20,11 +20,11 @@ export function Employees() {
 }
 
 
-function EmployeesList(props) {
-  const [employees, setEmployees] = useState([])
+function ObjectivesList(props) {
+  const [objective, setObjectives] = useState([])
 
-  function fetchEmployees() {
-    fetch("http://localhost:8000/api/Employee")
+  function fetchObjectives() {
+    fetch("http://localhost:8000/api/Objective")
       .then(response => {
         if (!response.ok) {
           throw new Error("Server response error...")
@@ -32,58 +32,57 @@ function EmployeesList(props) {
         return response.json()
       })
       .then(data => {
-        setEmployees(data)
+        setObjectives(data)
       })
       .catch(error => {
         console.error(error)
       })
   }
 
-  useEffect(() => fetchEmployees(), [])
+  useEffect(() => fetchObjectives(), [])
 
-  function deleteEmployee(id) {
-    fetch(`http://localhost:8000/api/Employee?id=${id}`, {
+  function deleteObjectives(id) {
+    fetch(`http://localhost:8000/api/Objective?id=${id}`, {
       method: "DELETE"
     })
       .then(response => response.json())
-      .then(data => fetchEmployees())
+      .then(data => fetchObjectives())
       .catch(error => console.error(error))
   }
 
   return (
     <>
-      <h2 className="text-center mb-3">List of employees</h2>
+      <h2 className="text-center mb-3">List of objectives</h2>
       <button onClick={() => props.showForm({})} type='button' className='btn btn-primary me-2'>Add</button>
-      <button onClick={() => fetchEmployees()} type='button' className='btn btn-outline-primary me-2'>Refresh content</button>
+      <button onClick={() => fetchObjectives()} type='button' className='btn btn-outline-primary me-2'>Refresh content</button>
 
       <table className='table'>
         <thead>
           <tr>
             <th>Name</th>
-            <th>Surname</th>
-            <th>Patronymic</th>
-            <th>Email</th>
-            <th>Projects</th>
-            <th>Objectives</th>
-            <th>Action</th>
+            <th>Executor</th>
+            <th>Project</th>
+            <th>Status</th>
+            <th>Description</th>
+            <th>Priority</th>
           </tr>
         </thead>
 
         <tbody>
           {
-            employees.map((employee, index) => {
+            objective.map((objective, index) => {
               return (
                 <tr key={index}>
-                  <td>{employee.name}</td>
-                  <td>{employee.surname}</td>
-                  <td>{employee.patronymic}</td>
-                  <td>{employee.email}</td>
-                  <td>{employee.projects.map(p => p.name).join("; ")}</td>
-                  <td>{employee.objectives.map(o => o.name).join("; ")}</td>
+                  <td>{objective.name}</td>
+                  <td>{objective.executor && `${objective.executor.name} ${objective.executor.surname}`}</td>
+                  <td>{objective.project && objective.project.name}</td>
+                  <td>{objective.status}</td>
+                  <td>{objective.description}</td>
+                  <td>{objective.priority}</td>
                   
                   <td style={{width: "10px", whiteSpace: "nowrap"}}>
-                    <button onClick={() => props.showForm(employee)} type='button' className='btn btn-primary btn-sm me-2'>Edit</button>
-                    <button onClick={() => deleteEmployee(employee.id)} type='button' className='btn btn-danger btn-sm'>Delete</button>
+                    <button onClick={() => props.showForm(objective)} type='button' className='btn btn-primary btn-sm me-2'>Edit</button>
+                    <button onClick={() => deleteObjectives(objective.id)} type='button' className='btn btn-danger btn-sm'>Delete</button>
                   </td>
                 </tr>
               )
@@ -95,7 +94,7 @@ function EmployeesList(props) {
   )
 }
 
-function EmployeesForm(props) {
+function ObjectivesForm(props) {
 
   const [errorMessage, setErrorMessage] = useState("")
 
@@ -103,24 +102,24 @@ function EmployeesForm(props) {
     event.preventDefault()
 
     const formData = new FormData(event.target)
-    const employee = Object.fromEntries(formData.entries())
+    const objective = Object.fromEntries(formData.entries())
 
-    if (!employee.name || !employee.surname || !employee.patronymic || !employee.email) {
+    if (!objective.name || !objective.executorId || !objective.projectId || !objective.status || !objective.description || !objective.priority) {
       setErrorMessage(
         <div className='alert alert-warning' role='alert'>
-          Some data missing for employee creation
+          Some data missing for objective creation
         </div>
       )
       return
     }
 
-    if (props.employee.id) {
-      fetch(`http://localhost:8000/api/Employee?id=${props.employee.id}`, {
+    if (props.objective.id) {
+      fetch(`http://localhost:8000/api/Objective?id=${props.objective.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(employee)
+      body: JSON.stringify(objective)
     })
       .then(response => {
         if (!response.ok) {
@@ -132,12 +131,12 @@ function EmployeesForm(props) {
         console.error(error)
       })
     } else {
-      fetch("http://localhost:8000/api/Employee", {
+      fetch("http://localhost:8000/api/Objective", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(employee)
+      body: JSON.stringify(objective)
       })
         .then(response => {
           if (!response.ok) {
@@ -153,18 +152,18 @@ function EmployeesForm(props) {
 
   return (
     <>
-      <h2 className="text-center mb-3">{props.employee.id ? "Edit employee" : "Add employee"}</h2>
+      <h2 className="text-center mb-3">{props.objective.id ? "Edit objective" : "Add objective"}</h2>
       <div className='row'>
 
         <div className='col-lg-6 mx-auto'>
 
           {errorMessage}
           <form onSubmit={(event) => handleSubmit(event)}>
-            {props.employee.id && <div className='rom mb-3'>
+            {props.objective.id && <div className='rom mb-3'>
               <label className='col-sm-4 col-form-label'>Id</label>
               <div className='col-sm-8'>
                 <input readOnly className='form-control-plaintext' name='name' 
-                defaultValue={props.employee.id}/>
+                defaultValue={props.objective.id}/>
               </div>
             </div>}
 
@@ -172,28 +171,42 @@ function EmployeesForm(props) {
               <label className='col-sm-4 col-form-label'>Name</label>
               <div className='col-sm-8'>
                 <input className='form-control' name='name' 
-                defaultValue={props.employee.name}/>
+                defaultValue={props.objective.name}/>
               </div>
             </div>
 
             <div className='rom mb-3'>
-              <label className='col-sm-4 col-form-label'>Surname</label>
+              <label className='col-sm-4 col-form-label'>Executor id</label>
               <div className='col-sm-8'>
-                <input className='form-control' name='surname' defaultValue={props.employee.surname}/>
+                <input className='form-control' name='executorId' defaultValue={props.objective.executorId}/>
               </div>
             </div>
 
             <div className='rom mb-3'>
-              <label className='col-sm-4 col-form-label'>Patronymic</label>
+              <label className='col-sm-4 col-form-label'>Project Id</label>
               <div className='col-sm-8'>
-                <input className='form-control' name='patronymic' defaultValue={props.employee.patronymic}/>
+                <input className='form-control' name='projectId' defaultValue={props.objective.projectId}/>
               </div>
             </div>
 
             <div className='rom mb-3'>
-              <label className='col-sm-4 col-form-label'>Email</label>
+              <label className='col-sm-4 col-form-label'>Status</label>
               <div className='col-sm-8'>
-                <input className='form-control' name='email' defaultValue={props.employee.email}/>
+                <input className='form-control' name='status' defaultValue={props.objective.status}/>
+              </div>
+            </div>
+
+            <div className='rom mb-3'>
+              <label className='col-sm-4 col-form-label'>Description</label>
+              <div className='col-sm-8'>
+                <input className='form-control' name='description' defaultValue={props.objective.description}/>
+              </div>
+            </div>
+
+            <div className='rom mb-3'>
+              <label className='col-sm-4 col-form-label'>Priority</label>
+              <div className='col-sm-8'>
+                <input className='form-control' name='priority' defaultValue={props.objective.priority}/>
               </div>
             </div>
 
